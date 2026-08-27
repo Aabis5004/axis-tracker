@@ -349,26 +349,27 @@ window.onclick = function(event) {
     }
 }
 
-
 let isRefreshing = false;
 async function forceRefresh() {
     if (isRefreshing) return;
     const btn = document.getElementById('refresh-btn');
-    btn.textContent = 'RELOADING...';
-    btn.style.opacity = '0.7';
+    if(btn) {
+        btn.textContent = 'RELOADING...';
+        btn.style.opacity = '0.7';
+    }
     isRefreshing = true;
     
     try {
-        initApp(); // reload everything from data.json
-        setTimeout(() => {
-            btn.textContent = 'SYNC NOW';
-            btn.style.opacity = '1';
-            isRefreshing = false;
-        }, 1000);
+        await initApp(); // reload everything from data.json
+        if(btn) {
+            setTimeout(() => {
+                btn.textContent = 'SYNC NOW';
+                btn.style.opacity = '1';
+                isRefreshing = false;
+            }, 1000);
+        }
     } catch(e) {
-        btn.textContent = 'ERROR';
-        setTimeout(() => { btn.textContent = 'SYNC NOW'; isRefreshing = false; }, 3000);
-    }
-}, 3000);
+        if(btn) btn.textContent = 'ERROR';
+        setTimeout(() => { if(btn) btn.textContent = 'SYNC NOW'; isRefreshing = false; }, 3000);
     }
 }
