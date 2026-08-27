@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axis Analytics — Leaderboard Telemetry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-canvas">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <header id="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="3" width="18" height="18" rx="5" fill="url(#logo_grad)" stroke="rgba(168, 85, 247, 0.4)" stroke-width="1.5"/>
+                        <path d="M12 7L16 11L12 15L8 11L12 7Z" fill="#a855f7"/>
+                        <circle cx="12" cy="17" r="1.5" fill="#c084fc"/>
+                        <defs>
+                            <linearGradient id="logo_grad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#7c3aed" stop-opacity="0.6"/>
+                                <stop offset="1" stop-color="#3b0764" stop-opacity="0.2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="brand-title">AXIS ANALYTICS</span>
+            </div>
+
+            <div class="header-pills">
+                <div class="status-pill">
+                    <span class="pulse-dot"></span>
+                    <span id="stat-total-users">28,998 Hub Users</span>
+                </div>
+                <div class="info-pill">
+                    <span id="stat-pages-loaded">2,500 Tracked</span>
+                </div>
+                <div class="time-pill" style="display:flex; gap:10px; align-items:center;">
+                    <span id="stat-last-updated">Live</span>
+                    <button class="refresh-btn" onclick="forceRefresh()" id="refresh-btn" style="background:#00ffaa; color:#000; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">SYNC NOW</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="pill-tag">
+                <span class="pill-dot"></span> Built for Axis Robotics
+            </div>
+            <h1 class="hero-title">
+                Smart analytics,<br>
+                <span class="italic-title">tracked precision.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Explore real-time trajectory milestones, analyze point distribution, and calculate your exact position on the global Axis leaderboard.
+            </p>
+        </div>
+    </section>
+
+    <main id="app-main">
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loader-card">
+                <div class="spinner-ring"></div>
+                <div class="loader-content">
+                    <h3>Syncing Axis Network</h3>
+                    <p id="loading-status">Connecting to live API telemetry...</p>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="progress-label" id="progress-label">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard" id="dashboard" style="display:none;">
+
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-icon"></span>
+                    <h2>Trajectory Milestones</h2>
+                </div>
+                <span class="section-hint">Total Hub Users: 28,998 | Top 2,500 API Tracked</span>
+            </div>
+
+            <section class="kpi-grid">
+                <div class="kpi-card" id="kpi-200plus">
+                    <div class="kpi-card-header">
+                        <span class="kpi-icon-badge"></span>
+                        <span class="kpi-tag">Milestone</span>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-number" id="val-200plus">—</span>
+                        <span class="kpi-title">Users 200+ Trajectories</span>
+                        <span class="kpi-sub">Completed 200+ trajectories</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-500plus">
+                    <div class="kpi-card-header">
+                        <span class="kpi-icon-badge"></span>
+                        <span class="kpi-tag">Milestone</span>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-number" id="val-500plus">—</span>
+                        <span class="kpi-title">Users 500+ Trajectories</span>
+                        <span class="kpi-sub">Completed 500+ trajectories</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-1000plus">
+                    <div class="kpi-card-header">
+                        <span class="kpi-icon-badge"></span>
+                        <span class="kpi-tag">Elite</span>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-number" id="val-1000plus">—</span>
+                        <span class="kpi-title">Users 1,000+ Trajectories</span>
+                        <span class="kpi-sub">Completed 1K+ trajectories</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-5000plus">
+                    <div class="kpi-card-header">
+                        <span class="kpi-icon-badge"></span>
+                        <span class="kpi-tag">Master</span>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-number" id="val-5000plus">—</span>
+                        <span class="kpi-title">Users 5,000+ Trajectories</span>
+                        <span class="kpi-sub">Completed 5K+ trajectories</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-10000plus">
+                    <div class="kpi-card-header">
+                        <span class="kpi-icon-badge"></span>
+                        <span class="kpi-tag">Legend</span>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-number" id="val-10000plus">—</span>
+                        <span class="kpi-title">Users 10,000+ Trajectories</span>
+                        <span class="kpi-sub">Top tier power contributors</span>
+                    </div>
+                </div>
+            </section>
+
+            
+
+            <section class="two-column-layout">
+                <div class="glass-card rank-card">
+                    <div class="glass-card-header">
+                        <div>
+                            <div class="card-icon-pill"> Rank Estimator</div>
+                            <h3 class="card-heading">Check Your Global Rank</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card-body">
+                        <p class="input-intro">Enter any number of trajectories to estimate your rank position among all 28,998+ Axis Hub users.</p>
+                        
+                        <div class="input-box">
+                            <input type="number" id="traj-input" placeholder="e.g. 200" min="0">
+                            <button id="calc-btn" onclick="calculateRank()">Estimate Rank</button>
+                        </div>
+
+                        <div class="quick-pills">
+                            <span class="quick-label">Quick test:</span>
+                            <button class="quick-pill" onclick="quickCalc(100)">100</button>
+                            <button class="quick-pill" onclick="quickCalc(200)">200</button>
+                            <button class="quick-pill" onclick="quickCalc(500)">500</button>
+                            <button class="quick-pill" onclick="quickCalc(1000)">1,000</button>
+                            <button class="quick-pill" onclick="quickCalc(2500)">2,500</button>
+                            <button class="quick-pill" onclick="quickCalc(5000)">5,000</button>
+                        </div>
+
+                        <div class="calc-result-box" id="calc-result" style="display:none;">
+                            <div class="result-hero">
+                                <span class="result-hero-label">Estimated Leaderboard Rank</span>
+                                <span class="result-hero-value" id="result-rank-value">#—</span>
+                            </div>
+                            <div class="result-grid">
+                                <div class="result-grid-item">
+                                    <span class="res-label">Percentile</span>
+                                    <span class="res-val" id="result-top-pct">—</span>
+                                </div>
+                                <div class="result-grid-item">
+                                    <span class="res-label">Users Ahead</span>
+                                    <span class="res-val" id="result-above">—</span>
+                                </div>
+                                <div class="result-grid-item">
+                                    <span class="res-label">Users Behind</span>
+                                    <span class="res-val" id="result-below">—</span>
+                                </div>
+                            </div>
+                            <div class="result-neighbors" id="result-neighbors"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card dist-card">
+                    <div class="glass-card-header">
+                        <div>
+                            <div class="card-icon-pill"> Telemetry Breakdown</div>
+                            <h3 class="card-heading">Trajectory Distribution</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card-body">
+                        <p class="input-intro">Shows how active users are distributed across different trajectory volume tiers.</p>
+                        <div class="dist-chart" id="dist-chart"></div>
+                        <div class="dist-summary" id="dist-summary"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="glass-card table-card" id="leaderboard-card">
+                <div class="glass-card-header table-header">
+                    <div>
+                        <div class="card-icon-pill"> Live Leaderboard</div>
+                        <h3 class="card-heading">Top Performers Telemetry</h3>
+                    </div>
+                    <div class="tab-toggle">
+                        <button class="tab-btn active" id="tab-traj" onclick="switchTab('trajectories')">Trajectories</button>
+                        
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="flow-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Contributor</th>
+                                <th>Wallet Address</th>
+                                <th id="th-metric">Trajectories</th>
+                                <th id="th-secondary">Avg Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody"></tbody>
+                    </table>
+                </div>
+
+                <div class="table-pagination-bar">
+                    <span id="table-info" class="pagination-info">Showing top users</span>
+                    <div class="pagination-buttons" id="table-pagination"></div>
+                </div>
+            </section>
+
+            <section class="glass-card milestone-section" id="milestone-card">
+                <div class="glass-card-header">
+                    <div>
+                        <div class="card-icon-pill"> Progression Tiering</div>
+                        <h3 class="card-heading">Trajectory Threshold Milestones</h3>
+                    </div>
+                </div>
+                <div class="glass-card-body">
+                    <div class="milestone-grid" id="milestone-body"></div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>Axis Analytics • Community Telemetry Dashboard</p>
+            <p class="footer-sub">Data synced from <a href="https://hub.axisrobotics.ai" target="_blank" rel="noopener">hub.axisrobotics.ai</a> • Independent Community Tool</p>
+        </div>
+    </footer>
+
+    
+    <div id="user-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modal-username">User Name</h2>
+            <div class="modal-grid">
+                <div class="modal-item">
+                    <label>Wallet Address</label>
+                    <div id="modal-wallet">—</div>
+                </div>
+                <div class="modal-item">
+                    <label>Global Rank</label>
+                    <div id="modal-rank">—</div>
+                </div>
+                <div class="modal-item">
+                    <label>Total Trajectories</label>
+                    <div id="modal-traj">—</div>
+                </div>
+                <div class="modal-item">
+                    <label>Avg Trajectory Score</label>
+                    <div id="modal-avg-score">—</div>
+                </div>
+                <div class="modal-item">
+                    <label>Total Points</label>
+                    <div id="modal-points">—</div>
+                </div>
+                <div class="modal-item">
+                    <label>Task / Referral</label>
+                    <div id="modal-split">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+
+</body>
+</html>
